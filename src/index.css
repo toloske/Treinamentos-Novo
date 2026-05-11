@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0033CC;
+  --color-primary-light: #3366FF;
+  --color-primary-dark: #0028A0;
+  
+  --font-display: "Outfit", system-ui, sans-serif;
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.5);
+    border-radius: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.8);
+  }
+}
+
+body {
+  font-family: "Inter", "Outfit", system-ui, sans-serif;
+  @apply bg-slate-50 text-slate-900 antialiased;
+  background-image: linear-gradient(to bottom, #f0f4ff, #ffffff);
+  min-height: 100vh;
+}
