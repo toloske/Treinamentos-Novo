@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, User, ShieldAlert } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import type { Driver } from '../services/dataService';
+import logo from '../assets/logo.png';
 
 interface NavbarProps {
   driver: Driver | null;
@@ -24,11 +25,11 @@ const Navbar: React.FC<NavbarProps> = ({ driver, onLogout }) => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={handleAdminClick}>
-              <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 mr-3">
-                <ShieldAlert className="text-white w-6 h-6" />
+              <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center mr-3 shadow-lg p-1">
+                <img src={logo} alt="Logo da Empresa" className="w-full h-full object-contain" />
               </div>
               <span className="font-bold text-xl text-slate-800 hidden sm:block tracking-tight">
-                Treinamentos <span className="text-primary">Onboarding</span>
+                TransManá <span className="text-primary">Onboarding</span>
               </span>
             </div>
           </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, KeyRound, Search, ShieldAlert, ArrowLeft, Loader2, Lock } from 'lucide-react';
 import { dataService } from '../../services/dataService';
+import logo from '../../assets/logo.png';
 import type { Driver, Module, Progress } from '../../services/dataService';
 import CertificateGenerator from '../training/CertificateGenerator';
 
@@ -83,8 +84,8 @@ const AdminDashboard: React.FC = () => {
     return (
       <div className="min-h-[60vh] flex flex-col justify-center items-center p-4">
         <div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 w-full max-w-md animate-in fade-in zoom-in-95 duration-300">
-          <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
-            <ShieldAlert className="w-8 h-8" />
+          <div className="w-24 h-24 bg-slate-900 rounded-xl flex items-center justify-center border border-slate-800 shadow-lg p-3 mx-auto mb-6">
+            <img src={logo} alt="Logo da Empresa" className="w-full h-full object-contain" />
           </div>
           <h2 className="text-2xl font-bold text-center text-slate-800 mb-2">Acesso Restrito</h2>
           <p className="text-center text-slate-500 mb-8">Área exclusiva para administradores.</p>
@@ -142,7 +143,9 @@ const AdminDashboard: React.FC = () => {
           </button>
           <div>
             <h1 className="text-2xl font-bold text-slate-800 flex items-center">
-              <ShieldAlert className="w-6 h-6 text-primary mr-2" />
+              <div className="bg-slate-900 p-1.5 rounded-lg mr-3 shadow-sm flex items-center justify-center">
+                <img src={logo} alt="Logo da Empresa" className="w-6 h-6 object-contain" />
+              </div>
               Painel Administrativo
             </h1>
             <p className="text-slate-500 mt-1">Gerenciamento de acessos e certificados do Onboarding.</p>

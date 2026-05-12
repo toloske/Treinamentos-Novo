@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { UserPlus, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { dataService } from '../../services/dataService';
+import logo from '../../assets/logo.png';
 import type { Driver } from '../../services/dataService';
 
 export const Register: React.FC<{ onRegister: (d: Driver) => void }> = ({ onRegister }) => {
@@ -49,8 +50,8 @@ export const Register: React.FC<{ onRegister: (d: Driver) => void }> = ({ onRegi
     <div className="flex justify-center items-center py-10">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-            <UserPlus className="w-8 h-8 text-primary" />
+          <div className="w-24 h-24 bg-slate-900 rounded-xl flex items-center justify-center border border-slate-800 shadow-lg p-3">
+            <img src={logo} alt="Logo da Empresa" className="w-full h-full object-contain" />
           </div>
         </div>
         <h2 className="text-2xl font-bold text-center text-slate-800 mb-2">Criar Conta</h2>
