@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, KeyRound, Search, ShieldAlert, ArrowLeft, Loader2, Lock } from 'lucide-react';
+import { Users, KeyRound, Search, ArrowLeft, Loader2, Lock } from 'lucide-react';
 import { dataService } from '../../services/dataService';
 import logo from '../../assets/logo.png';
 import type { Driver, Module, Progress } from '../../services/dataService';
