@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, KeyRound, Search, ArrowLeft, Loader2, Lock } from 'lucide-react';
+import { Users, KeyRound, Search, ArrowLeft, Loader2, Lock, RefreshCcw } from 'lucide-react';
 import { dataService } from '../../services/dataService';
 import logo from '../../assets/logo.png';
 import type { Driver, Module, Progress } from '../../services/dataService';
@@ -56,6 +56,35 @@ const AdminDashboard: React.FC = () => {
       setAllProgress(progressData);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRecycling = async (driver: Driver) => {
+    const driverProgressRows = allProgress.filter(p => p.driver_id === driver.id && p.status === 'completed');
+    
+    if (driverProgressRows.length === 0) {
+      alert('Este motorista ainda não concluiu nenhum treinamento para realizar reciclagem.');
+      return;
+    }
+
+    const confirmMessage = `Deseja realmente iniciar a reciclagem para ${driver.name}?\n\nIsso irá:\n1. Resetar o progresso atual.\n2. Marcar o certificado como "Reciclagem".\n3. Salvar a data de conclusão atual como treinamento anterior.`;
+    
+    if (!confirm(confirmMessage)) return;
+
+    setLoading(true);
+    try {
+      // Find the latest completion date
+      const dates = driverProgressRows.map(p => p.completed_at ? new Date(p.completed_at).getTime() : 0);
+      const latestDate = new Date(Math.max(...dates)).toISOString();
+      
+      await dataService.triggerRecycling(driver.id, latestDate);
+      alert('Reciclagem iniciada com sucesso!');
+      await fetchData();
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao iniciar reciclagem.');
     } finally {
       setLoading(false);
     }
@@ -228,6 +257,14 @@ const AdminDashboard: React.FC = () => {
                             className="inline-flex items-center justify-center p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
                           >
                             <KeyRound className="w-4 h-4" />
+                          </button>
+
+                          <button 
+                            onClick={() => handleRecycling(d)}
+                            title="Iniciar Reciclagem"
+                            className={`inline-flex items-center justify-center p-2 rounded-lg transition-colors ${d.is_recycling ? 'text-blue-500 bg-blue-50' : 'text-slate-400 hover:text-blue-500 hover:bg-blue-50'}`}
+                          >
+                            <RefreshCcw className={`w-4 h-4 ${d.is_recycling ? 'animate-spin-slow' : ''}`} />
                           </button>
                           
                           {isFinished && (

@@ -23,94 +23,136 @@ const CertificateGenerator: React.FC<CertProps> = ({ driver, modules, compact })
         format: 'a4' // 297 x 210 mm
       });
 
-      // 1. Background elements
-      pdf.setFillColor(219, 234, 254); // #dbeafe (blue-100)
-      pdf.circle(0, 0, 70, 'F'); // Top left corner decor
+      // 1. Background (Subtle Cream/White)
+      pdf.setFillColor(255, 255, 252);
+      pdf.rect(0, 0, 297, 210, 'F');
 
-      pdf.setFillColor(224, 231, 255); // #e0e7ff (indigo-100)
-      pdf.circle(297, 210, 90, 'F'); // Bottom right corner decor
-
-      // 2. Border
-      pdf.setDrawColor(30, 58, 138); // #1e3a8a
-      pdf.setLineWidth(5);
-      pdf.rect(10, 10, 277, 190);
-
-      // 3. Title
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(79, 70, 229); // #4f46e5
-      pdf.setFontSize(36);
-      pdf.text('CERTIFICADO DE CONCLUSÃO', 148.5, 45, { align: 'center' });
-
-      // 4. Subtitle
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(71, 85, 105); // #475569
-      pdf.setFontSize(16);
-      pdf.text('Certificamos que', 148.5, 65, { align: 'center' });
-
-      // 5. Driver Name
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(15, 23, 42); // #0f172a
-      pdf.setFontSize(28);
-      pdf.text(driver.name, 148.5, 85, { align: 'center' });
+      // 2. Gold Borders
+      const goldColor = [197, 160, 82]; // Classic Gold
+      pdf.setDrawColor(goldColor[0], goldColor[1], goldColor[2]);
       
-      // Underline name
-      const nameWidth = pdf.getTextWidth(driver.name);
-      pdf.setDrawColor(226, 232, 240); // #e2e8f0
-      pdf.setLineWidth(1);
-      pdf.line(148.5 - (nameWidth / 2) - 10, 90, 148.5 + (nameWidth / 2) + 10, 90);
+      // Outer thick border
+      pdf.setLineWidth(2);
+      pdf.rect(8, 8, 281, 194);
+      
+      // Inner thin border
+      pdf.setLineWidth(0.5);
+      pdf.rect(12, 12, 273, 186);
 
-      // 6. Main Text & LGPD
+      // 3. Corner Accents (Gold)
+      pdf.setFillColor(goldColor[0], goldColor[1], goldColor[2]);
+      pdf.rect(8, 8, 15, 15, 'F'); // TL
+      pdf.rect(274, 8, 15, 15, 'F'); // TR
+      pdf.rect(8, 187, 15, 15, 'F'); // BL
+      pdf.rect(274, 187, 15, 15, 'F'); // BR
+
+      // 4. Top Medallion for Logo (Dark Blue/Slate with Gold Frame)
+      pdf.setFillColor(15, 23, 42); // Dark Slate
+      pdf.circle(148.5, 35, 22, 'F');
+      pdf.setDrawColor(goldColor[0], goldColor[1], goldColor[2]);
+      pdf.setLineWidth(1.5);
+      pdf.circle(148.5, 35, 23, 'S');
+
+      // 4.1 Logo (on the medallion)
+      try {
+        pdf.addImage('/logo.png', 'PNG', 133.5, 20, 30, 30);
+      } catch (e) {
+        console.warn('Logo not found');
+      }
+
+      // 5. Title
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(goldColor[0], goldColor[1], goldColor[2]);
+      pdf.setFontSize(38);
+      pdf.text(driver.is_recycling ? 'CERTIFICADO DE RECICLAGEM' : 'CERTIFICADO', 148.5, 75, { align: 'center' });
+      
+      pdf.setFontSize(14);
+      pdf.setTextColor(15, 23, 42);
+      pdf.text('DE CONCLUSÃO DE TREINAMENTO', 148.5, 82, { align: 'center', charSpace: 2 });
+
+      // 6. Subtitle
       pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(71, 85, 105);
-      pdf.setFontSize(12);
-      const cpfFormatted = driver.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-      const docText1 = `portador(a) do CPF ${cpfFormatted}, concluiu com êxito o programa de`;
-      const docText2 = `Onboarding de Motoristas, cumprindo a carga horária e aprovado em todos os requisitos exigidos.`;
-      pdf.text(docText1, 148.5, 105, { align: 'center' });
-      pdf.text(docText2, 148.5, 112, { align: 'center' });
+      pdf.setFontSize(14);
+      pdf.text('Pelo presente documento, certificamos com honra que', 148.5, 98, { align: 'center' });
 
-      // LGPD Clause
-      pdf.setFont('helvetica', 'italic');
-      pdf.setFontSize(8);
-      pdf.setTextColor(148, 163, 184); // #94a3b8
-      const lgpdText = `O motorista declara que realizou pessoalmente os módulos, estando de acordo com as normas de segurança. Declara também seu consentimento para o tratamento de seus dados pessoais (Nome e CPF) exclusivamente para registro de treinamento, conforme a LGPD (Lei 13.709/2018).`;
-      pdf.text(lgpdText, 148.5, 122, { align: 'center', maxWidth: 220 });
-
-      // 7. Modules Section
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(10);
-      pdf.setTextColor(100, 116, 139); // #64748b
-      pdf.text('MÓDULOS CONCLUÍDOS', 148.5, 138, { align: 'center' });
-
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(51, 65, 85);
-      const modsText = modules.map(m => m.title).join('   •   ');
-      
-      pdf.text(modsText, 148.5, 148, { align: 'center', maxWidth: 250 });
-
-      // 8. Signatures Footer
-      pdf.setDrawColor(148, 163, 184); // #94a3b8
-      pdf.setLineWidth(0.5);
-
-      // Left - Motorista
-      pdf.line(30, 180, 100, 180);
+      // 7. Driver Name
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(15, 23, 42);
-      pdf.setFontSize(10);
-      pdf.text('Assinatura do Motorista', 65, 186, { align: 'center' });
+      pdf.setFontSize(32);
+      pdf.text(driver.name, 148.5, 115, { align: 'center' });
+      
+      // Decorative line under name
+      pdf.setDrawColor(goldColor[0], goldColor[1], goldColor[2]);
+      pdf.setLineWidth(1);
+      const nameWidth = pdf.getTextWidth(driver.name);
+      pdf.line(148.5 - (nameWidth / 2) - 15, 120, 148.5 + (nameWidth / 2) + 15, 120);
 
-      // Center - Date
+      // 8. Main Text
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(71, 85, 105);
+      pdf.setFontSize(13);
+      const cpfFormatted = driver.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+      const docText1 = driver.is_recycling 
+        ? `concluiu com distinção o programa de reciclagem e atualização operacional`
+        : `concluiu com distinção o treinamento de integração e diretrizes operacionais`;
+      const docText2 = `da TransManá Logística, estando apto(a) para o exercício de suas funções.`;
+      pdf.text(docText1, 148.5, 135, { align: 'center' });
+      pdf.text(docText2, 148.5, 142, { align: 'center' });
+
+      // 8.1 Recycling Dates Info
+      if (driver.is_recycling && driver.previous_training_at) {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(9);
+        pdf.setTextColor(15, 23, 42);
+        const prevDate = new Date(driver.previous_training_at).toLocaleDateString('pt-BR');
+        pdf.text(`Treinamento Anterior: ${prevDate}   |   Reciclagem Atual: ${new Date().toLocaleDateString('pt-BR')}`, 148.5, 150, { align: 'center' });
+      }
+
+      // 9. Seal (Bottom Right)
+      pdf.setFillColor(goldColor[0], goldColor[1], goldColor[2]);
+      pdf.circle(255, 165, 15, 'F');
+      pdf.setDrawColor(255, 255, 255);
+      pdf.setLineWidth(0.5);
+      pdf.circle(255, 165, 13, 'S');
+      
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(6);
+      pdf.text('QUALIDADE', 255, 163, { align: 'center' });
+      pdf.setFontSize(10);
+      pdf.text('TransManá', 255, 168, { align: 'center' });
+
+      // LGPD Clause (Bottom Center)
+      pdf.setFont('helvetica', 'italic');
+      pdf.setFontSize(7);
+      pdf.setTextColor(148, 163, 184);
+      const lgpdText = `Este documento é pessoal e intransferível. Validado em conformidade com a LGPD (Lei 13.709/2018).`;
+      pdf.text(lgpdText, 148.5, 192, { align: 'center' });
+
+      // 10. Modules Section
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(9);
+      pdf.setTextColor(15, 23, 42);
+      pdf.text('MÓDULOS DE TREINAMENTO:', 148.5, 160, { align: 'center' });
+
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(100, 116, 139);
+      const modsText = modules.map(m => m.title).join('  |  ');
+      pdf.text(modsText, 148.5, 168, { align: 'center', maxWidth: 200 });
+
+      // 11. Date (Bottom Left)
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(15, 23, 42);
+      pdf.setFontSize(9);
+      pdf.text(`EMITIDO EM: ${new Date().toLocaleDateString('pt-BR')}`, 45, 168, { align: 'center' });
+
+      // 8. Date and Footer (Signatures Removed)
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(100, 116, 139);
       pdf.setFontSize(10);
       pdf.text(`Data de Conclusão: ${new Date().toLocaleDateString('pt-BR')}`, 148.5, 186, { align: 'center' });
 
-      // Right - Instructor
-      pdf.line(197, 180, 267, 180);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(15, 23, 42);
-      pdf.setFontSize(10);
-      pdf.text('Assinatura do Instrutor', 232, 186, { align: 'center' });
 
       // Save PDF
       pdf.save(`Certificado_Onboarding_${driver.name.replace(/\s+/g, '_')}.pdf`);

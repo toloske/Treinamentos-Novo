@@ -5,6 +5,8 @@ export interface Driver {
   cpf: string;
   name: string;
   email?: string;
+  is_recycling?: boolean;
+  previous_training_at?: string;
 }
 
 export interface Module {
@@ -106,5 +108,24 @@ export const dataService = {
       .select('*');
     if (error) throw error;
     return data;
+  },
+
+  async triggerRecycling(driverId: string, previousDate: string): Promise<void> {
+    // 1. Update driver status
+    const { error: updateError } = await supabase
+      .from('onboarding_drivers')
+      .update({ 
+        is_recycling: true, 
+        previous_training_at: previousDate 
+      })
+      .eq('id', driverId);
+    if (updateError) throw updateError;
+
+    // 2. Delete all progress
+    const { error: deleteError } = await supabase
+      .from('onboarding_progress')
+      .delete()
+      .eq('driver_id', driverId);
+    if (deleteError) throw deleteError;
   }
 };

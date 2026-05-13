@@ -9,6 +9,8 @@
   --color-primary-dark: #0028A0;
   
   --font-display: "Outfit", system-ui, sans-serif;
+  
+  --animate-spin-slow: spin 3s linear infinite;
 }
 
 @layer utilities {

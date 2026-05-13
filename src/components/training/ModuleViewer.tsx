@@ -32,14 +32,28 @@ interface QuizQuestion {
 
 const QUIZ_MAPPING: Record<string, QuizQuestion[]> = {
   'operacao': [
-    { id: 1, question: 'Durante o processo de finalização e prestação de contas, o que é exigido do motorista?', options: ['Apenas informar verbalmente que a entrega foi concluída', 'Entregar os canhotos assinados, sem rasuras, carimbados e com a devida baixa no sistema', 'Deixar os documentos no veículo para a próxima viagem', 'Apenas assinar a folha de ponto ao final da jornada'], correctIndex: 1 },
-    { id: 2, question: 'Qual é o principal papel do YMS na operação logística?', options: ['Controlar o consumo de combustível da frota', 'Rastrear o veículo durante todo o percurso rodoviário', 'Gerenciar de forma inteligente o fluxo e o pátio de veículos', 'Calcular o valor do frete a ser pago'], correctIndex: 2 },
-    { id: 3, question: 'Durante o carregamento, de quem é a responsabilidade de acompanhar a carga, garantir a correta distribuição de peso e realizar a amarração adequada?', options: ['Exclusiva da equipe de armazém', 'Do cliente final que vai receber a mercadoria', 'Do porteiro ou controlador de acesso da unidade', 'Do motorista, garantindo a segurança para a viagem'], correctIndex: 3 }
+    { id: 1, question: 'Qual é a ordem correta sugerida para contar os pacotes na gaiola e transferi-los para o veículo?', options: ['Começar pela parte de baixo para liberar espaço', 'Contar primeiro a parte de cima, depois a do meio e por fim a de baixo', 'Contar e organizar no carro ao mesmo tempo para ganhar velocidade', 'Contar apenas o que couber no veículo na primeira viagem'], correctIndex: 1 },
+    { id: 2, question: 'Qual é o limite de velocidade permitido para veículos dentro do pátio do SVC?', options: ['20 km/h', '15 km/h', '10 km/h', '5 km/h'], correctIndex: 3 },
+    { id: 3, question: 'O que significa o indicador PNR na operação?', options: ['Pedido No Recinto', 'Pacote Não Recebido', 'Procedimento de Nova Rota', 'Pacote Novamente Roteirizado'], correctIndex: 1 },
+    { id: 4, question: 'Qual é a meta de tempo (YMS) para realizar todo o carregamento e liberar a vaga?', options: ['Até 10 minutos', 'Até 30 minutos', 'Até 60 minutos', 'Não existe meta de tempo definida'], correctIndex: 1 },
+    { id: 5, question: 'O que define uma "Visita Fantasma" nas métricas de experiência do comprador?', options: ['Quando o motorista esquece o pacote no pátio', 'Quando o cliente não é encontrado no endereço', 'Atualizar o status de insucesso sem estar perto do local de entrega', 'Quando o pacote é entregue para um vizinho sem autorização'], correctIndex: 2 },
+    { id: 6, question: 'Ao estacionar na doca para carregar, onde o motorista deve deixar a chave do veículo?', options: ['No bolso do uniforme por segurança', 'Na ignição com o motor desligado', 'Entregar ao responsável do local ou deixá-la no para-brisa', 'Escondida embaixo do banco'], correctIndex: 2 },
+    { id: 7, question: 'No procedimento de "APOIO" (ajudar em uma rota existente), qual é a regra de ouro sobre os pacotes?', options: ['Bipar todos os pacotes antes de sair', 'NUNCA bipar o pacote', 'Bipar apenas os pacotes que forem entregues por último', 'Bipar apenas se o motorista principal autorizar'], correctIndex: 1 },
+    { id: 8, question: 'Se o aplicativo solicitar uma Palavra-Chave (Senha) e o cliente não a possuir, o que deve ser feito?', options: ['Deixar o pacote com o cliente e pedir para ele ligar depois', 'Tentar adivinhar a senha por até 10 vezes', 'Em hipótese alguma deixar o pacote; marcar como "Não pude entregar"', 'Entregar para um vizinho que saiba a senha do cliente'], correctIndex: 2 },
+    { id: 9, question: 'Qual é a regra de segurança sobre o uso de celular (telemóvel) no pátio do SVC?', options: ['Uso livre para falar com o dispatcher', 'Proibido usar enquanto dirige ou caminha pelo pátio', 'Permitido apenas se estiver usando fones de ouvido comuns', 'Permitido apenas dentro do veículo estacionado com motor ligado'], correctIndex: 1 },
+    { id: 10, question: 'O que fazer se identificar um barulho estranho dentro de uma caixa durante a inspeção 360°?', options: ['Carregar assim mesmo se a caixa estiver bonita por fora', 'Abrir a caixa para ver o que tem dentro', 'Verificar se indica avaria e solicitar retirada da rota ou reembalagem', 'Chacoalhar a caixa com força para ver se o barulho para'], correctIndex: 2 }
   ],
   'seguranca': [
-    { id: 1, question: 'Segundo a NR6 e nossas políticas internas, qual é a principal finalidade do uso de EPIs?', options: ['Proteger a saúde e a integridade física do trabalhador em áreas de risco', 'Apenas cumprir uma formalidade burocrática da empresa', 'Melhorar a estética e a padronização do uniforme', 'Evitar que a roupa pessoal de uso diário se suje'], correctIndex: 0 },
-    { id: 2, question: 'Por que o uso da telemetria é fundamental na prevenção de acidentes?', options: ['Porque aumenta a potência do motor do veículo', 'Porque permite monitorar excessos de velocidade, frenagens bruscas e comportamentos de risco', 'Porque serve exclusivamente para o controle financeiro de pedágios', 'Porque substitui a necessidade de habilitação profissional'], correctIndex: 1 },
-    { id: 3, question: 'Durante o processo de carga e descarga, qual é a postura de segurança recomendada?', options: ['Deixar o veículo ligado e desengatado para agilizar a saída', 'Isolar a área, calçar o veículo, usar EPIs apropriados e manter distância de cargas suspensas', 'Ficar posicionado debaixo da carga para ajudar a segurá-la ou guiá-la', 'Dormir na cabine enquanto o caminhão é carregado sem o acionamento das travas'], correctIndex: 1 }
+    { id: 1, question: 'De acordo com a NR 6, o que é considerado um EPI (Equipamento de Proteção Individual)?', options: ['Qualquer ferramenta usada para agilizar o trabalho', 'Um dispositivo de uso coletivo para proteger a equipe', 'Um dispositivo ou produto de uso individual destinado a proteger contra riscos ocupacionais', 'O uniforme padrão da empresa, independentemente da função'], correctIndex: 2 },
+    { id: 2, question: 'Qual é uma das responsabilidades da organização (empresa) em relação aos EPIs?', options: ['Cobrar pelo fornecimento de cada equipamento', 'Fornecer o EPI adequado gratuitamente e em perfeito estado', 'Pedir para o motorista comprar seu próprio calçado de segurança', 'Exigir o uso do EPI apenas em dias de chuva'], correctIndex: 1 },
+    { id: 3, question: 'Sobre o excesso de velocidade, o que os estudos indicam sobre a severidade dos acidentes?', options: ['A velocidade não influencia na gravidade da batida', 'Um aumento de apenas 8 km/h pode elevar em até 8% o número de mortes', 'O cinto de segurança anula todos os riscos de alta velocidade', 'Correr mais ajuda a evitar acidentes por passar mais rápido pelos perigos'], correctIndex: 1 },
+    { id: 4, question: 'Qual é o primeiro passo sugerido nas "Boas Práticas" para se preparar contra riscos no transporte?', options: ['Comprar um veículo novo', 'Fazer um mapeamento de riscos para identificar pontos de falha', 'Contratar mais ajudantes', 'Aumentar a velocidade das entregas'], correctIndex: 1 },
+    { id: 5, question: 'Na organização da carga, onde devem ser colocados os pacotes mais pesados?', options: ['No topo da pilha para facilitar a retirada', 'Na parte inferior (chão) do veículo', 'No banco do passageiro para equilibrar o peso', 'Pendurados nas laterais do baú'], correctIndex: 1 },
+    { id: 6, question: 'O que são os "Pictogramas" encontrados nas caixas de mercadorias?', options: ['Adesivos decorativos com a marca do cliente', 'Códigos de barras para leitura no aplicativo', 'Símbolos gráficos que comunicam instruções universais de manuseio e armazenamento', 'Etiquetas que indicam o preço do produto'], correctIndex: 2 },
+    { id: 7, question: 'Qual é a recomendação correta para o transporte de Televisores (TVs) na rota?', options: ['Transportar deitada para não cair', 'Empilhar outros pacotes pesados por cima da caixa', 'Colocar na lateral, amarrada para não se mover, e nunca carregar deitada', 'Colocar sempre junto com latas de tinta para economizar espaço'], correctIndex: 2 },
+    { id: 8, system_id: 2, question: 'O sistema de Telemetria Veicular monitora quais comportamentos do motorista em tempo real?', options: ['Apenas a localização por GPS', 'Velocidade, frenagens bruscas e consumo de combustível', 'O que o motorista está ouvindo no rádio', 'A temperatura externa do ambiente'], correctIndex: 1 },
+    { id: 9, question: 'Ao ligar o veículo, quanto tempo é recomendado esperar para que o óleo lubrifique o motor completamente?', options: ['Não precisa esperar, pode sair imediatamente', 'Esperar de 20 a 30 segundos após ligar', 'Esperar pelo menos 10 minutos em marcha lenta', 'Esperar o motor atingir 100°C'], correctIndex: 1 },
+    { id: 10, question: 'Qual é a regra sobre o uso de celular (telemóvel) ao volante, segundo o treinamento de segurança?', options: ['Permitido apenas para ver o mapa da rota', 'Permitido se for uma ligação rápida do dispatcher', 'Não utilizar o celular ao volante em hipótese alguma', 'Permitido apenas em estradas de terra'], correctIndex: 2 }
   ]
 };
 
@@ -71,11 +85,21 @@ const ModuleViewer: React.FC<{ driver: Driver }> = ({ driver }) => {
   // Quiz states
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
+  const [randomizedQuestions, setRandomizedQuestions] = useState<QuizQuestion[]>([]);
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   
   const pdfs = id ? PDF_MAPPING[id] || [] : [];
   const currentPdf = pdfs[currentPdfIndex];
-  const quizQuestions = id ? QUIZ_MAPPING[id] || [] : [];
+  const quizQuestions = randomizedQuestions;
+
+  useEffect(() => {
+    if (id && QUIZ_MAPPING[id]) {
+      const shuffled = [...QUIZ_MAPPING[id]]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3); // Now displaying exactly 3 questions per session
+      setRandomizedQuestions(shuffled);
+    }
+  }, [id]);
 
   useEffect(() => {
     const fetchModule = async () => {
