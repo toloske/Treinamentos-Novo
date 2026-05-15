@@ -87,6 +87,7 @@ const ModuleViewer: React.FC<{ driver: Driver }> = ({ driver }) => {
   const [quizAnswers, setQuizAnswers] = useState<Record<number, number>>({});
   const [randomizedQuestions, setRandomizedQuestions] = useState<QuizQuestion[]>([]);
   const [quizSubmitted, setQuizSubmitted] = useState(false);
+  const [pdfPage, setPdfPage] = useState(1);
   
   const pdfs = id ? PDF_MAPPING[id] || [] : [];
   const currentPdf = pdfs[currentPdfIndex];
@@ -125,6 +126,7 @@ const ModuleViewer: React.FC<{ driver: Driver }> = ({ driver }) => {
     setIsTransitioning(true);
     setTimeout(() => {
       setCurrentPdfIndex(newIndex);
+      setPdfPage(1); // Reset to first page on topic change
       setIsTransitioning(false);
     }, 300); // 300ms transition
   };
@@ -261,24 +263,42 @@ const ModuleViewer: React.FC<{ driver: Driver }> = ({ driver }) => {
         <div className={`flex-1 w-full h-full transition-opacity duration-300 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'} flex flex-col`}>
           {!showQuiz ? (
             pdfs.length > 0 ? (
-              <div id="pdf-container" className="flex-1 overflow-y-auto overflow-x-hidden -webkit-overflow-scrolling-touch bg-slate-800 relative custom-scrollbar">
-                {/* Mobile Scroll Hint */}
-                <div className="sm:hidden absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none animate-bounce flex items-center space-x-2 bg-slate-900/80 text-white px-4 py-2 rounded-full text-xs font-bold border border-white/20 backdrop-blur-sm shadow-xl">
-                   <Eye className="w-4 h-4" />
-                   <span>Role para ler as páginas</span>
+              <div id="pdf-container" className="flex-1 flex flex-col bg-slate-800 relative overflow-hidden">
+                {/* Page Navigation Controls - VERY IMPORTANT FOR MOBILE */}
+                <div className="bg-slate-900/90 text-white p-2 flex items-center justify-center space-x-6 z-20 border-b border-white/10 backdrop-blur-md">
+                   <button 
+                     onClick={() => setPdfPage(prev => Math.max(1, prev - 1))}
+                     disabled={pdfPage <= 1}
+                     className="flex items-center space-x-1 text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-30"
+                   >
+                     <ChevronLeft className="w-4 h-4" />
+                     <span>Pág. Anterior</span>
+                   </button>
+                   
+                   <span className="text-xs font-bold text-slate-300">Página {pdfPage}</span>
+                   
+                   <button 
+                     onClick={() => setPdfPage(prev => prev + 1)}
+                     className="flex items-center space-x-1 text-xs font-bold bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors"
+                   >
+                     <span>Próxima Pág.</span>
+                     <ChevronRight className="w-4 h-4" />
+                   </button>
                 </div>
 
-                <iframe 
-                  src={`/pdfs/${module.folder_name}/${currentPdf}#toolbar=0&navpanes=0&scrollbar=0`}
-                  className="w-full min-h-[300vh] sm:min-h-0 sm:h-full border-0 bg-white"
-                  title={`PDF ${currentPdf}`}
-                  loading="lazy"
-                />
+                <div className="flex-1 w-full h-full overflow-hidden bg-white relative">
+                  <iframe 
+                    key={`${currentPdf}-${pdfPage}`} // Force iframe reload on page change
+                    src={`/pdfs/${module.folder_name}/${currentPdf}#page=${pdfPage}&toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                    className="w-full h-full border-0"
+                    title={`PDF ${currentPdf}`}
+                    loading="lazy"
+                  />
+                </div>
 
-                {/* PC Scroll Indicator for narrow iframes */}
-                <div className="hidden sm:flex absolute bottom-4 right-4 z-20 items-center space-x-2 bg-slate-900/50 text-white px-3 py-1.5 rounded-lg text-xs font-medium backdrop-blur-sm border border-white/10">
-                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                   <span>Visualização do Documento</span>
+                {/* Mobile Hint */}
+                <div className="sm:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none opacity-50 flex items-center space-x-2 bg-slate-900/80 text-white px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 shadow-xl">
+                   <span>Use os botões acima para mudar de página</span>
                 </div>
               </div>
             ) : (
