@@ -212,7 +212,7 @@ const PdfSlideViewer: React.FC<{ url: string }> = ({ url }) => {
       </div>
 
       {/* Slide Content Area */}
-      <div className="flex-1 overflow-auto bg-slate-900 flex items-start justify-center p-2 sm:p-4 custom-scrollbar">
+      <div className="flex-1 overflow-auto bg-slate-900 flex items-center justify-center p-2 sm:p-4 custom-scrollbar">
         <div className="w-full max-w-4xl bg-white shadow-2xl rounded-sm overflow-hidden">
           <canvas ref={canvasRef} className="w-full h-auto block" />
         </div>
