@@ -71,6 +71,163 @@ const formatPdfName = (filename: string) => {
   return noExt;
 };
 
+// --- PDF Slide Viewer Component ---
+const PdfSlideViewer: React.FC<{ url: string }> = ({ url }) => {
+  const [pdf, setPdf] = React.useState<any>(null);
+  const [pageNum, setPageNum] = React.useState(1);
+  const [numPages, setNumPages] = React.useState(0);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const renderTaskRef = React.useRef<any>(null);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    setLoading(true);
+    setError(null);
+    setPageNum(1);
+
+    const loadPdf = async () => {
+      try {
+        const pdfjsLib = (window as any).pdfjsLib;
+        if (!pdfjsLib) throw new Error('PDF.js not loaded');
+
+        const loadingTask = pdfjsLib.getDocument(url);
+        const loadedPdf = await loadingTask.promise;
+        
+        if (isMounted) {
+          setPdf(loadedPdf);
+          setNumPages(loadedPdf.numPages);
+          setLoading(false);
+        }
+      } catch (err: any) {
+        if (isMounted) {
+          setError('Erro ao carregar o documento. Verifique sua conexão.');
+          setLoading(false);
+          console.error(err);
+        }
+      }
+    };
+
+    loadPdf();
+    return () => { isMounted = false; };
+  }, [url]);
+
+  const renderPage = React.useCallback(async (num: number) => {
+    if (!pdf || !canvasRef.current) return;
+
+    try {
+      // Cancel previous render task
+      if (renderTaskRef.current) {
+        renderTaskRef.current.cancel();
+      }
+
+      const page = await pdf.getPage(num);
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+      if (!context) return;
+
+      // Calculate scale based on container width
+      const containerWidth = canvas.parentElement?.clientWidth || 800;
+      const unscaledViewport = page.getViewport({ scale: 1 });
+      const scale = (containerWidth * 2) / unscaledViewport.width; // 2x for retina/sharpness
+      const viewport = page.getViewport({ scale });
+
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      canvas.style.width = '100%';
+      canvas.style.height = 'auto';
+
+      const renderContext = {
+        canvasContext: context,
+        viewport: viewport,
+      };
+
+      renderTaskRef.current = page.render(renderContext);
+      await renderTaskRef.current.promise;
+      renderTaskRef.current = null;
+    } catch (err: any) {
+      if (err.name !== 'RenderingCancelledException') {
+        console.error('Render error:', err);
+      }
+    }
+  }, [pdf]);
+
+  React.useEffect(() => {
+    if (pdf) {
+      renderPage(pageNum);
+    }
+  }, [pdf, pageNum, renderPage]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-slate-800 text-white space-y-4">
+        <div className="w-10 h-10 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+        <p className="text-sm font-medium animate-pulse">Carregando slides...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-slate-800 text-white p-6 text-center space-y-4">
+        <AlertCircle className="w-12 h-12 text-rose-500" />
+        <p className="text-sm font-medium">{error}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs transition-colors"
+        >
+          Tentar Novamente
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full bg-slate-900 overflow-hidden select-none">
+      {/* Slide Navigation Header */}
+      <div className="bg-slate-800 border-b border-white/10 p-2 flex items-center justify-between z-20 shadow-lg">
+        <button 
+          onClick={() => setPageNum(p => Math.max(1, p - 1))}
+          disabled={pageNum <= 1}
+          className="flex items-center space-x-2 px-3 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl disabled:opacity-20 transition-all active:scale-95"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          <span className="text-xs font-bold hidden sm:inline">Anterior</span>
+        </button>
+
+        <div className="flex flex-col items-center">
+           <span className="text-xs font-black text-white tracking-widest uppercase">Slide</span>
+           <span className="text-lg font-black text-primary leading-none">{pageNum} <span className="text-white/30 text-sm">/ {numPages}</span></span>
+        </div>
+
+        <button 
+          onClick={() => setPageNum(p => Math.min(numPages, p + 1))}
+          disabled={pageNum >= numPages}
+          className="flex items-center space-x-2 px-3 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl disabled:opacity-20 transition-all active:scale-95 shadow-lg shadow-primary/20"
+        >
+          <span className="text-xs font-bold hidden sm:inline">Próximo</span>
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Slide Content Area */}
+      <div className="flex-1 overflow-auto bg-slate-900 flex items-start justify-center p-2 sm:p-4 custom-scrollbar">
+        <div className="w-full max-w-4xl bg-white shadow-2xl rounded-sm overflow-hidden">
+          <canvas ref={canvasRef} className="w-full h-auto block" />
+        </div>
+      </div>
+
+      {/* Swipe/Scroll Indicator (Mobile) */}
+      {numPages > 1 && pageNum === 1 && (
+        <div className="sm:hidden absolute bottom-20 left-1/2 -translate-x-1/2 bg-slate-800/80 backdrop-blur-md text-white px-4 py-2 rounded-full text-[10px] font-bold border border-white/10 animate-bounce pointer-events-none">
+           USE OS BOTÕES ACIMA PARA PASSAR
+        </div>
+      )}
+    </div>
+  );
+};
+
 const ModuleViewer: React.FC<{ driver: Driver }> = ({ driver }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -262,38 +419,7 @@ const ModuleViewer: React.FC<{ driver: Driver }> = ({ driver }) => {
           {!showQuiz ? (
             pdfs.length > 0 ? (
               <div id="pdf-container" className="flex-1 flex flex-col bg-slate-800 relative overflow-hidden">
-                {!showQuiz && (
-                  <div className="sm:hidden bg-amber-50 p-3 flex items-center justify-between border-b border-amber-200">
-                    <div className="flex items-center space-x-2 text-amber-800">
-                      <FileText className="w-4 h-4" />
-                      <span className="text-xs font-bold">Problemas ao visualizar?</span>
-                    </div>
-                    <a 
-                      href={`/pdfs/${module.folder_name}/${currentPdf}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-amber-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-1 shadow-sm"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      <span>Abrir Slide Inteiro</span>
-                    </a>
-                  </div>
-                )}
-
-                <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden -webkit-overflow-scrolling-touch bg-slate-800 relative custom-scrollbar">
-                  {/* Mobile Scroll Hint */}
-                  <div className="sm:hidden absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none animate-bounce flex items-center space-x-2 bg-slate-900/80 text-white px-4 py-2 rounded-full text-xs font-bold border border-white/20 backdrop-blur-sm shadow-xl">
-                     <ChevronRight className="w-4 h-4 rotate-90" />
-                     <span>Role para baixo para ver mais páginas</span>
-                  </div>
-
-                  <iframe 
-                    src={`/pdfs/${module.folder_name}/${currentPdf}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                    className="w-full min-h-[4000px] sm:min-h-0 sm:h-full border-0 bg-white"
-                    title={`PDF ${currentPdf}`}
-                    loading="lazy"
-                  />
-                </div>
+                <PdfSlideViewer url={`/pdfs/${module.folder_name}/${currentPdf}`} />
               </div>
             ) : (
               <div className="flex h-full items-center justify-center text-slate-400 flex-col p-6 text-center bg-white">
