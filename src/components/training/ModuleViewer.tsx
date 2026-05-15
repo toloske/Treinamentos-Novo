@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, FileText, ChevronRight, ChevronLeft, HelpCircle, AlertCircle, ExternalLink, Eye } from 'lucide-react';
+import { ArrowLeft, CheckCircle, FileText, ChevronRight, ChevronLeft, HelpCircle, AlertCircle, ExternalLink } from 'lucide-react';
 import { dataService } from '../../services/dataService';
 import type { Driver, Module } from '../../services/dataService';
 
