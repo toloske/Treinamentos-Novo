@@ -99,6 +99,9 @@ const CertificateGenerator: React.FC<CertProps> = ({ driver, modules, compact })
       const docText2 = `da TransManá Logística, estando apto(a) para o exercício de suas funções.`;
       pdf.text(docText1, 148.5, 135, { align: 'center' });
       pdf.text(docText2, 148.5, 142, { align: 'center' });
+      
+      pdf.setFontSize(10);
+      pdf.text(`CPF: ${cpfFormatted}`, 148.5, 126, { align: 'center' });
 
       // 8.1 Recycling Dates Info
       if (driver.is_recycling && driver.previous_training_at) {
