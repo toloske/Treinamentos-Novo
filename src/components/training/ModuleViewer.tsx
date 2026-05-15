@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, FileText, ChevronRight, ChevronLeft, HelpCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, FileText, ChevronRight, ChevronLeft, HelpCircle, AlertCircle, ExternalLink, Eye } from 'lucide-react';
 import { dataService } from '../../services/dataService';
 import type { Driver, Module } from '../../services/dataService';
 
@@ -139,6 +139,9 @@ const ModuleViewer: React.FC<{ driver: Driver }> = ({ driver }) => {
         setIsTransitioning(false);
       }, 300);
     }
+    // Scroll content area back to top
+    const contentArea = document.getElementById('pdf-container');
+    if (contentArea) contentArea.scrollTop = 0;
   };
 
   const goToPrev = () => {
@@ -152,6 +155,9 @@ const ModuleViewer: React.FC<{ driver: Driver }> = ({ driver }) => {
     } else if (currentPdfIndex > 0) {
       handlePdfChange(currentPdfIndex - 1);
     }
+    // Scroll content area back to top
+    const contentArea = document.getElementById('pdf-container');
+    if (contentArea) contentArea.scrollTop = 0;
   };
 
   const handleComplete = async () => {
@@ -193,9 +199,9 @@ const ModuleViewer: React.FC<{ driver: Driver }> = ({ driver }) => {
   if (!module) return null;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
+    <div className="flex flex-col h-full min-h-0 bg-white">
       {/* Header */}
-      <div className="bg-white rounded-t-2xl p-4 border border-slate-200 border-b-0 flex items-center justify-between z-10 shadow-sm relative">
+      <div className="bg-white p-4 border-b border-slate-200 flex items-center justify-between z-10 relative">
         <div className="flex items-center space-x-2 sm:space-x-4">
           <button 
             onClick={() => navigate('/dashboard')}
@@ -204,50 +210,79 @@ const ModuleViewer: React.FC<{ driver: Driver }> = ({ driver }) => {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="overflow-hidden">
-            <h1 className="text-lg sm:text-xl font-bold text-slate-800 truncate">{module.title}</h1>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium truncate">
+            <h1 className="text-lg sm:text-xl font-bold text-slate-800 truncate leading-tight">{module.title}</h1>
+            <p className="text-[10px] sm:text-sm text-slate-500 font-medium truncate uppercase tracking-wider">
               {showQuiz ? 'Avaliação de Conhecimento' : `Parte ${currentPdfIndex + 1} de ${pdfs.length} • ${formatPdfName(currentPdf)}`}
             </p>
           </div>
         </div>
         
-        {showQuiz && quizSubmitted && isQuizPassed() && (
-          <button
-            onClick={handleComplete}
-            disabled={saving}
-            className="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 rounded-xl font-medium transition-colors flex items-center space-x-1 sm:space-x-2 disabled:opacity-50 shadow-md shadow-green-600/20 flex-shrink-0"
-          >
-            {saving ? (
-               <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            ) : (
-               <CheckCircle className="w-4 h-4" />
-            )}
-            <span className="hidden sm:inline">Concluir Módulo</span>
-            <span className="sm:hidden">Concluir</span>
-          </button>
-        )}
+        <div className="flex items-center space-x-2">
+          {!showQuiz && (
+             <a 
+               href={`/pdfs/${module.folder_name}/${currentPdf}`}
+               target="_blank"
+               rel="noopener noreferrer"
+               className="p-2 text-primary hover:bg-primary/5 rounded-full transition-colors sm:hidden"
+               title="Ver PDF em tela cheia"
+             >
+               <ExternalLink className="w-5 h-5" />
+             </a>
+          )}
+          
+          {showQuiz && quizSubmitted && isQuizPassed() && (
+            <button
+              onClick={handleComplete}
+              disabled={saving}
+              className="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 py-2 rounded-xl font-medium transition-colors flex items-center space-x-1 sm:space-x-2 disabled:opacity-50 shadow-md shadow-green-600/20 flex-shrink-0"
+            >
+              {saving ? (
+                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                 <CheckCircle className="w-4 h-4" />
+              )}
+              <span className="hidden sm:inline">Concluir Módulo</span>
+              <span className="sm:hidden">Concluir</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main content Area */}
-      <div className="flex-1 bg-slate-800 border-x border-slate-200 relative overflow-hidden">
+      <div className="flex-1 bg-slate-100 relative overflow-hidden flex flex-col">
         {/* Progress Bar Top */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-slate-700 z-10">
+        <div className="absolute top-0 left-0 w-full h-1 bg-slate-200 z-10">
            <div 
              className="h-full bg-primary transition-all duration-500 ease-out" 
-             style={{ width: `${showQuiz ? 100 : ((currentPdfIndex) / (pdfs.length + (quizQuestions.length > 0 ? 0 : -1))) * 100}%` }}
+             style={{ width: `${showQuiz ? 100 : ((currentPdfIndex) / (pdfs.length)) * 100}%` }}
            ></div>
         </div>
 
-        <div className={`w-full h-full transition-opacity duration-300 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+        <div className={`flex-1 w-full h-full transition-opacity duration-300 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'} flex flex-col`}>
           {!showQuiz ? (
             pdfs.length > 0 ? (
-              <iframe 
-                src={`/pdfs/${module.folder_name}/${currentPdf}#toolbar=0`}
-                className="w-full h-full border-0 bg-white"
-                title={`PDF ${currentPdf}`}
-              />
+              <div id="pdf-container" className="flex-1 overflow-y-auto overflow-x-hidden -webkit-overflow-scrolling-touch bg-slate-800 relative custom-scrollbar">
+                {/* Mobile Scroll Hint */}
+                <div className="sm:hidden absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none animate-bounce flex items-center space-x-2 bg-slate-900/80 text-white px-4 py-2 rounded-full text-xs font-bold border border-white/20 backdrop-blur-sm shadow-xl">
+                   <Eye className="w-4 h-4" />
+                   <span>Role para ler as páginas</span>
+                </div>
+
+                <iframe 
+                  src={`/pdfs/${module.folder_name}/${currentPdf}#toolbar=0&navpanes=0&scrollbar=0`}
+                  className="w-full min-h-[300vh] sm:min-h-0 sm:h-full border-0 bg-white"
+                  title={`PDF ${currentPdf}`}
+                  loading="lazy"
+                />
+
+                {/* PC Scroll Indicator for narrow iframes */}
+                <div className="hidden sm:flex absolute bottom-4 right-4 z-20 items-center space-x-2 bg-slate-900/50 text-white px-3 py-1.5 rounded-lg text-xs font-medium backdrop-blur-sm border border-white/10">
+                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                   <span>Visualização do Documento</span>
+                </div>
+              </div>
             ) : (
-              <div className="flex h-full items-center justify-center text-slate-400 flex-col p-6 text-center">
+              <div className="flex h-full items-center justify-center text-slate-400 flex-col p-6 text-center bg-white">
                 <FileText className="w-12 h-12 mb-4 opacity-50" />
                 <p>Nenhum material encontrado para este módulo.</p>
               </div>
@@ -358,14 +393,15 @@ const ModuleViewer: React.FC<{ driver: Driver }> = ({ driver }) => {
       </div>
 
       {/* Footer Navigation */}
-      <div className="bg-white rounded-b-2xl p-3 sm:p-4 border border-slate-200 border-t-0 flex items-center justify-between z-10 shadow-sm relative">
+      <div className="bg-white p-3 sm:p-4 border-t border-slate-200 flex items-center justify-between z-10 relative">
         <button
           onClick={goToPrev}
           disabled={currentPdfIndex === 0 && !showQuiz}
           className="px-3 sm:px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium transition-colors flex items-center space-x-1 sm:space-x-2 disabled:opacity-50 text-sm sm:text-base"
         >
           <ChevronLeft className="w-4 h-4" />
-          <span className="hidden sm:inline">{showQuiz ? 'Voltar aos Materiais' : 'Anterior'}</span>
+          <span className="hidden sm:inline">{showQuiz ? 'Voltar aos Materiais' : 'Conteúdo Anterior'}</span>
+          <span className="sm:hidden">{showQuiz ? 'Voltar' : 'Anterior'}</span>
         </button>
         
         {!showQuiz ? (
@@ -373,7 +409,7 @@ const ModuleViewer: React.FC<{ driver: Driver }> = ({ driver }) => {
             onClick={goToNext}
             className="px-4 sm:px-6 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold transition-all shadow-md shadow-primary/20 flex items-center space-x-1 sm:space-x-2 active:scale-95 text-sm sm:text-base"
           >
-            <span>{currentPdfIndex === pdfs.length - 1 ? 'Fazer Avaliação' : 'Próximo'}</span>
+            <span>{currentPdfIndex === pdfs.length - 1 ? 'Fazer Avaliação' : 'Próximo Tema'}</span>
             <ChevronRight className="w-4 h-4" />
           </button>
         ) : (

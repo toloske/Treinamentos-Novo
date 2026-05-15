@@ -38,7 +38,7 @@ export const Login: React.FC<{ onLogin: (d: Driver) => void }> = ({ onLogin }) =
   };
 
   return (
-    <div className="flex justify-center items-center h-[calc(100vh-6rem)]">
+    <div className="flex justify-center items-center h-full min-h-[400px]">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
         <div className="flex justify-center mb-6">
           <div className="w-24 h-24 bg-slate-900 rounded-xl flex items-center justify-center border border-slate-800 shadow-lg p-3">

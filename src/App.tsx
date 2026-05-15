@@ -34,26 +34,28 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="min-h-screen bg-slate-50 flex flex-col font-display">
+      <div className="h-screen flex flex-col bg-slate-50 font-display overflow-hidden">
         <Navbar driver={driver} onLogout={handleLogout} />
-        <main className="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
-          <Routes>
-            <Route path="/" element={
-              driver ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />
-            } />
-            <Route path="/register" element={
-              driver ? <Navigate to="/dashboard" /> : <Register onRegister={handleLogin} />
-            } />
-            <Route path="/dashboard" element={
-              driver ? <Dashboard driver={driver} /> : <Navigate to="/" />
-            } />
-            <Route path="/module/:id" element={
-              driver ? <ModuleViewer driver={driver} /> : <Navigate to="/" />
-            } />
-            <Route path="/admin" element={
-              <AdminDashboard />
-            } />
-          </Routes>
+        <main className="flex-1 w-full max-w-5xl mx-auto p-0 sm:p-6 lg:p-8 overflow-y-auto custom-scrollbar">
+          <div className="p-4 sm:p-0 h-full">
+            <Routes>
+              <Route path="/" element={
+                driver ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />
+              } />
+              <Route path="/register" element={
+                driver ? <Navigate to="/dashboard" /> : <Register onRegister={handleLogin} />
+              } />
+              <Route path="/dashboard" element={
+                driver ? <Dashboard driver={driver} /> : <Navigate to="/" />
+              } />
+              <Route path="/module/:id" element={
+                driver ? <ModuleViewer driver={driver} /> : <Navigate to="/" />
+              } />
+              <Route path="/admin" element={
+                <AdminDashboard />
+              } />
+            </Routes>
+          </div>
         </main>
       </div>
     </Router>
