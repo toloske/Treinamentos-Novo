@@ -68,25 +68,25 @@ const CertificateGenerator: React.FC<CertProps> = ({ driver, modules, compact })
       
       pdf.setFontSize(14);
       pdf.setTextColor(15, 23, 42);
-      pdf.text('DE CONCLUSÃO DE TREINAMENTO', 148.5, 82, { align: 'center', charSpace: 2 });
+      pdf.text('DE CONCLUSÃO DE TREINAMENTO', 148.5, 82, { align: 'center' });
 
       // 6. Subtitle
       pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(71, 85, 105);
       pdf.setFontSize(14);
-      pdf.text('Pelo presente documento, certificamos com honra que', 148.5, 98, { align: 'center' });
+      pdf.text('Certificamos que', 148.5, 96, { align: 'center' });
 
       // 7. Driver Name
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(15, 23, 42);
       pdf.setFontSize(32);
-      pdf.text(driver.name, 148.5, 115, { align: 'center' });
+      pdf.text(driver.name, 148.5, 112, { align: 'center' });
       
       // Decorative line under name
       pdf.setDrawColor(goldColor[0], goldColor[1], goldColor[2]);
       pdf.setLineWidth(1);
       const nameWidth = pdf.getTextWidth(driver.name);
-      pdf.line(148.5 - (nameWidth / 2) - 15, 120, 148.5 + (nameWidth / 2) + 15, 120);
+      pdf.line(148.5 - (nameWidth / 2) - 15, 116, 148.5 + (nameWidth / 2) + 15, 116);
 
       // 8. Main Text
       pdf.setFont('helvetica', 'normal');
@@ -94,14 +94,16 @@ const CertificateGenerator: React.FC<CertProps> = ({ driver, modules, compact })
       pdf.setFontSize(13);
       const cpfFormatted = driver.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
       const docText1 = driver.is_recycling 
-        ? `concluiu com distinção o programa de reciclagem e atualização operacional`
-        : `concluiu com distinção o treinamento de integração e diretrizes operacionais`;
-      const docText2 = `da TransManá Logística, estando apto(a) para o exercício de suas funções.`;
-      pdf.text(docText1, 148.5, 135, { align: 'center' });
-      pdf.text(docText2, 148.5, 142, { align: 'center' });
+        ? `Concluiu com êxito o programa de reciclagem e atualização operacional`
+        : `Concluiu com êxito o treinamento de integração e diretrizes operacionais`;
+      const docText2 = `da TransManá Logística, estando apto(a) para o exercício de suas funções`;
       
       pdf.setFontSize(10);
-      pdf.text(`CPF: ${cpfFormatted}`, 148.5, 126, { align: 'center' });
+      pdf.text(`CPF: ${cpfFormatted}`, 148.5, 122, { align: 'center' });
+
+      pdf.setFontSize(13);
+      pdf.text(docText1, 148.5, 134, { align: 'center' });
+      pdf.text(docText2, 148.5, 141, { align: 'center' });
 
       // 8.1 Recycling Dates Info
       if (driver.is_recycling && driver.previous_training_at) {
@@ -109,7 +111,7 @@ const CertificateGenerator: React.FC<CertProps> = ({ driver, modules, compact })
         pdf.setFontSize(9);
         pdf.setTextColor(15, 23, 42);
         const prevDate = new Date(driver.previous_training_at).toLocaleDateString('pt-BR');
-        pdf.text(`Treinamento Anterior: ${prevDate}   |   Reciclagem Atual: ${new Date().toLocaleDateString('pt-BR')}`, 148.5, 150, { align: 'center' });
+        pdf.text(`Treinamento Anterior: ${prevDate}   |   Reciclagem Atual: ${new Date().toLocaleDateString('pt-BR')}`, 148.5, 149, { align: 'center' });
       }
 
       // 9. Seal (Bottom Right)
@@ -137,24 +139,18 @@ const CertificateGenerator: React.FC<CertProps> = ({ driver, modules, compact })
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(9);
       pdf.setTextColor(15, 23, 42);
-      pdf.text('MÓDULOS DE TREINAMENTO:', 148.5, 160, { align: 'center' });
+      pdf.text('MÓDULOS DE TREINAMENTO:', 148.5, 158, { align: 'center' });
 
       pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(100, 116, 139);
       const modsText = modules.map(m => m.title).join('  |  ');
-      pdf.text(modsText, 148.5, 168, { align: 'center', maxWidth: 200 });
+      pdf.text(modsText, 148.5, 164, { align: 'center', maxWidth: 220 });
 
-      // 11. Date (Bottom Left)
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(15, 23, 42);
-      pdf.setFontSize(9);
-      pdf.text(`EMITIDO EM: ${new Date().toLocaleDateString('pt-BR')}`, 45, 168, { align: 'center' });
-
-      // 8. Date and Footer (Signatures Removed)
+      // 11. Date and Footer
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(100, 116, 139);
       pdf.setFontSize(10);
-      pdf.text(`Data de Conclusão: ${new Date().toLocaleDateString('pt-BR')}`, 148.5, 186, { align: 'center' });
+      pdf.text(`Data de Conclusão: ${new Date().toLocaleDateString('pt-BR')}`, 148.5, 184, { align: 'center' });
 
 
       // Save PDF
